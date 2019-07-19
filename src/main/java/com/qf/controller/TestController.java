@@ -13,6 +13,8 @@ public class TestController {
 
     @PutMapping("/update")
     public String update(String name,Integer age){
+
+        System.out.println("test测试");
         return null;
     }
 }
