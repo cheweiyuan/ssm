@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qf.mapper.ItemMapper">
+    <insert id="save" parameterType="Item">
+        insert into
+          item
+        (name,price,production_date,description,pic)
+          values
+        (#{name},#{price},#{productionDate},#{description},#{pic})
+    </insert>
+    <delete id="delById">
+        delete from item where id=#{id}
+    </delete>
+
+
+    <select id="findCountByName" resultType="java.lang.Long">
+        select count(1) from item
+        <where>
+            <if test="name!=null and name!=''">
+                name like "%"#{name}"%"
+            </if>
+        </where>
+
+    </select>
+    <select id="findItemByNameLikeAndLimit" resultType="com.qf.pojo.Item">
+        select * from item
+        <where>
+            <if test="name!=null and name!=''">
+                name like "%"#{name}"%"
+            </if>
+        </where>
+        order by created desc
+        limit #{offset},#{size}
+    </select>
+    <!--根据id查找item-->
+    <select id="findById" resultType="com.qf.pojo.Item">
+      select * from item where id=#{id}
+    </select>
+
+    <!--根据id修改商品信息-->
+    <update id="updateById" parameterType="Item">
+        update
+          item
+        <set>
+            <if test="name !=null and name !=''">
+                name=#{name},
+            </if>
+            <if test="price !=null">
+                price=#{price},
+            </if>
+            <if test="productionDate != null">
+                production_date = #{productionDate},
+            </if>
+            <if test="description != null and description != ''">
+                description = #{description},
+            </if>
+            <if test="pic != null and pic != ''" >
+                pic = #{pic}
+            </if>
+        </set>
+        where
+          id = #{id}
+    </update>
+</mapper>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+
+    <context:property-placeholder location="classpath:env.properties" />
+
+    <!--开启注解扫描-->
+    <context:component-scan base-package="com.qf.controller"/>
+    <context:component-scan base-package="com.qf.utils" />
+    <context:component-scan base-package="com.qf.handler" />
+    <!--mvc注解驱动-->
+    <mvc:annotation-driven />
+    <!--视图解析器-->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <!--基于tomcat对静态资源的放行 default-servlet-name="default" 可以删除不写-->
+    <!--基于服务器的方式-->
+    <!--<mvc:default-servlet-handler default-servlet-name="default" />-->
+
+
+    <!--http://localhost/static/js/jquery.min.js-->
+    <!--基于springmvc手动放行  -->
+    <mvc:resources mapping="/static/**" location="/static/" />
+
+    <!--配置文件上传项-->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver" >
+        <property name="maxInMemorySize" value="5242880" />
+    </bean>
+
+    <!--拦截器-->
+    <mvc:interceptors>
+        <mvc:interceptor>    <!--/user/register-ui     /item-->
+            <mvc:mapping path="/**"/>
+            <!--如果不对/user/**路径放行 会导致无限调用拦截器前处理-->
+            <mvc:exclude-mapping path="/user/**" />
+            <!--将被拦截器拦截的静态资源放行 方式1   不推荐 没有方式2效率高(web.xml中)-->
+            <mvc:exclude-mapping path="/static/**" />
+            <bean class="com.qf.interceptor.AuthenticationInterceptor" />
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+
+
+</beans>
